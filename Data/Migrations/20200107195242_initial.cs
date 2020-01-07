@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Data.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -136,7 +136,7 @@ namespace Data.Migrations
                     DeletedAt = table.Column<DateTime>(nullable: true),
                     EmployeeNumber = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<string>(nullable: true),
-                    PersonId = table.Column<int>(nullable: false),
+                    PersonId = table.Column<int>(nullable: true),
                     DepartmentId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -153,7 +153,7 @@ namespace Data.Migrations
                         column: x => x.PersonId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -273,7 +273,7 @@ namespace Data.Migrations
             migrationBuilder.InsertData(
                 table: "Products",
                 columns: new[] { "Id", "CreatedAt", "DeletedAt", "Description", "ModifiedAt", "Name", "Quantity" },
-                values: new object[] { 1, new DateTime(2020, 1, 7, 21, 41, 36, 152, DateTimeKind.Local).AddTicks(770), null, "Iphone 7 128GB", null, "Iphone", 300 });
+                values: new object[] { 1, new DateTime(2020, 1, 7, 21, 52, 42, 252, DateTimeKind.Local).AddTicks(2609), null, "Iphone 7 128GB", null, "Iphone", 300 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customers_PersonId",
@@ -300,7 +300,8 @@ namespace Data.Migrations
                 name: "IX_Employees_PersonId",
                 table: "Employees",
                 column: "PersonId",
-                unique: true);
+                unique: true,
+                filter: "[PersonId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Photos_ProductId",

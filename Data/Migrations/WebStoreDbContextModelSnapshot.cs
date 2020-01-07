@@ -97,7 +97,6 @@ namespace Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("PersonId")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("PhoneNumber")
@@ -108,7 +107,8 @@ namespace Data.Migrations
                     b.HasIndex("DepartmentId");
 
                     b.HasIndex("PersonId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[PersonId] IS NOT NULL");
 
                     b.ToTable("Employees");
                 });
@@ -255,7 +255,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2020, 1, 7, 21, 41, 36, 152, DateTimeKind.Local).AddTicks(770),
+                            CreatedAt = new DateTime(2020, 1, 7, 21, 52, 42, 252, DateTimeKind.Local).AddTicks(2609),
                             Description = "Iphone 7 128GB",
                             Name = "Iphone",
                             Quantity = 300
@@ -410,9 +410,7 @@ namespace Data.Migrations
 
                     b.HasOne("Models.Person", "Person")
                         .WithOne("Employee")
-                        .HasForeignKey("Models.Employee", "PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Models.Employee", "PersonId");
                 });
 
             modelBuilder.Entity("Models.EmployeeCustomer", b =>

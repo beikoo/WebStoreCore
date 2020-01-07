@@ -16,11 +16,21 @@ using Services.Interface;
 using Microsoft.OpenApi.Models;
 using Repositories.Interfaces;
 using Repositories;
+using Services.CustomModels;
+using System.Configuration;
+using Microsoft.Extensions.Configuration;
+using Services.Implementations;
 
 namespace WebStoreApi
 {
     public class Startup
     {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -31,24 +41,27 @@ namespace WebStoreApi
             //});
             services.AddControllers();
 
-            services.AddAuthentication(opt => {
-                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-             .AddJwtBearer(options =>
-             {
-                 options.TokenValidationParameters = new TokenValidationParameters
-                 {
-                     ValidateIssuer = true,
-                     ValidateAudience = true,
-                     ValidateLifetime = true,
-                     ValidateIssuerSigningKey = true,
+            services.Configure<TokenModel>(Configuration.GetSection("tokenManagement"));
+            var token = Configuration.GetSection("tokenManagement").Get<TokenModel>();
+            var secret = Encoding.ASCII.GetBytes(token.Secret);
 
-                     ValidIssuer = "http://localhost:5000",
-                     ValidAudience = "http://localhost:5000",
-                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"))
-                 };
-             });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = false,
+                        //ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(token.Secret)),
+                        ValidIssuer = token.Issuer,
+                        //ValidAudience = token.Issuer,
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -58,7 +71,8 @@ namespace WebStoreApi
             services.AddScoped<IUserManager,UserManager>();
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<IUserTokensRepository, UserTokenRepository>();
-           
+            services.AddScoped<ProductManager>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,6 +85,8 @@ namespace WebStoreApi
 
             app.UseSwagger();
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

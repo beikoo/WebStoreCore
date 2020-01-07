@@ -50,7 +50,7 @@
             var res = manager.Add(model);
             if (res.Length == 0)
             {
-                return Created("api/products", model);
+                return Ok(JsonConvert.SerializeObject(model));
             }
             return BadRequest();
         }

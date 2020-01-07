@@ -21,17 +21,21 @@ namespace Data
         public DbSet<Product> Products { get; set; }
         public DbSet<SalesOrder> Sales { get; set; }
         public DbSet<UserToken> UserTokens { get; set; }
+        public DbSet<UserRoles> UserRoles { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<EmployeeCustomer> EmployeeCustomers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //localhost\SQLEXPRESS01
            // "server=localhost\SQLEXPRESS01;database=WebStoreCore;trusted_connection=true;"
-            optionsBuilder.UseSqlServer(@"Server=airfan\SQLEXPRESS;Database=WebApiCore;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(@"Server=airfan\SQLEXPRESS;Database=WebApiCore1;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Product>().HasData(new Product() { Id = 1, Name="Iphone",Quantity=300,CreatedAt = DateTime.Now,Description ="Iphone 7 128GB" });
+            modelBuilder.Entity<Role>().HasData(new Role() { Id = 1, RoleName = "Admin" });
         }
         public override int SaveChanges()
         {

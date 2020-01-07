@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Data.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initialdd : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -16,7 +16,6 @@ namespace Data.Migrations
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
                     DeletedAt = table.Column<DateTime>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -33,11 +32,10 @@ namespace Data.Migrations
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
                     DeletedAt = table.Column<DateTime>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    FirstName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(nullable: true),
-                    Password = table.Column<string>(nullable: true)
+                    FirstName = table.Column<string>(maxLength: 20, nullable: false),
+                    LastName = table.Column<string>(maxLength: 20, nullable: false),
+                    Email = table.Column<string>(maxLength: 50, nullable: false),
+                    Password = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,7 +51,6 @@ namespace Data.Migrations
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
                     DeletedAt = table.Column<DateTime>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     Quantity = table.Column<int>(nullable: false)
@@ -61,6 +58,22 @@ namespace Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Roles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: true),
+                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    RoleName = table.Column<string>(maxLength: 10, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -72,7 +85,6 @@ namespace Data.Migrations
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
                     DeletedAt = table.Column<DateTime>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
                     AccountNumber = table.Column<string>(nullable: true),
                     PersonId = table.Column<int>(nullable: false)
                 },
@@ -96,10 +108,9 @@ namespace Data.Migrations
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
                     DeletedAt = table.Column<DateTime>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
                     EmployeeNumber = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<string>(nullable: true),
-                    PersonId = table.Column<int>(nullable: false),
+                    PersonId = table.Column<int>(nullable: true),
                     DepartmentId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -116,6 +127,30 @@ namespace Data.Migrations
                         column: x => x.PersonId,
                         principalTable: "People",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: true),
+                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    Token = table.Column<string>(nullable: true),
+                    UserId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserTokens_People_UserId",
+                        column: x => x.UserId,
+                        principalTable: "People",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -128,8 +163,8 @@ namespace Data.Migrations
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
                     DeletedAt = table.Column<DateTime>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true),
+                    PhotoDir = table.Column<string>(nullable: true),
                     ImageType = table.Column<string>(nullable: true),
                     Content = table.Column<string>(nullable: true),
                     ProductId = table.Column<int>(nullable: false)
@@ -146,6 +181,35 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserRoles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    ModifiedAt = table.Column<DateTime>(nullable: true),
+                    DeletedAt = table.Column<DateTime>(nullable: true),
+                    UserId = table.Column<int>(nullable: false),
+                    RoleId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRoles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserRoles_People_UserId",
+                        column: x => x.UserId,
+                        principalTable: "People",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Sales",
                 columns: table => new
                 {
@@ -154,7 +218,6 @@ namespace Data.Migrations
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
                     DeletedAt = table.Column<DateTime>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
                     Quantity = table.Column<int>(nullable: false),
                     DateOFSale = table.Column<DateTime>(nullable: false),
                     Note = table.Column<string>(nullable: true),
@@ -179,7 +242,7 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EmployeeCustomer",
+                name: "EmployeeCustomers",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -187,26 +250,35 @@ namespace Data.Migrations
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
                     DeletedAt = table.Column<DateTime>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
                     CustomerId = table.Column<int>(nullable: false),
                     EmployeeId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmployeeCustomer", x => x.Id);
+                    table.PrimaryKey("PK_EmployeeCustomers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_EmployeeCustomer_Customers_CustomerId",
+                        name: "FK_EmployeeCustomers_Customers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_EmployeeCustomer_Employees_EmployeeId",
+                        name: "FK_EmployeeCustomers_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "Products",
+                columns: new[] { "Id", "CreatedAt", "DeletedAt", "Description", "ModifiedAt", "Name", "Quantity" },
+                values: new object[] { 1, new DateTime(2020, 1, 7, 23, 31, 1, 62, DateTimeKind.Local).AddTicks(6967), null, "Iphone 7 128GB", null, "Iphone", 300 });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "CreatedAt", "DeletedAt", "ModifiedAt", "RoleName" },
+                values: new object[] { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, "Admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customers_PersonId",
@@ -215,13 +287,13 @@ namespace Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmployeeCustomer_CustomerId",
-                table: "EmployeeCustomer",
+                name: "IX_EmployeeCustomers_CustomerId",
+                table: "EmployeeCustomers",
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmployeeCustomer_EmployeeId",
-                table: "EmployeeCustomer",
+                name: "IX_EmployeeCustomers_EmployeeId",
+                table: "EmployeeCustomers",
                 column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
@@ -233,7 +305,8 @@ namespace Data.Migrations
                 name: "IX_Employees_PersonId",
                 table: "Employees",
                 column: "PersonId",
-                unique: true);
+                unique: true,
+                filter: "[PersonId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Photos_ProductId",
@@ -249,18 +322,39 @@ namespace Data.Migrations
                 name: "IX_Sales_ProductId",
                 table: "Sales",
                 column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_RoleId",
+                table: "UserRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_UserId",
+                table: "UserRoles",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserTokens_UserId",
+                table: "UserTokens",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "EmployeeCustomer");
+                name: "EmployeeCustomers");
 
             migrationBuilder.DropTable(
                 name: "Photos");
 
             migrationBuilder.DropTable(
                 name: "Sales");
+
+            migrationBuilder.DropTable(
+                name: "UserRoles");
+
+            migrationBuilder.DropTable(
+                name: "UserTokens");
 
             migrationBuilder.DropTable(
                 name: "Employees");
@@ -270,6 +364,9 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Departments");

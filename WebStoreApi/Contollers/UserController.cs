@@ -31,8 +31,11 @@ namespace WebStoreApi.Contollers
         public IActionResult Register(RegisterModel registerModel)
         {
             string result =  userManager.Register(registerModel);
-
-            return Ok(result);
+            if (result.Length>0)
+            {
+                return Ok(result);
+            }
+            return BadRequest();
         }
 
         [Route("login")]

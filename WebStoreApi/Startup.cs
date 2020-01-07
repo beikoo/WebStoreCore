@@ -13,13 +13,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Services.Implementation;
 using Services.Interface;
-using Microsoft.OpenApi.Models;
 using Repositories.Interfaces;
 using Repositories;
 using Services.CustomModels;
 using System.Configuration;
 using Microsoft.Extensions.Configuration;
 using Services.Implementations;
+using Microsoft.OpenApi.Models;
 
 namespace WebStoreApi
 {

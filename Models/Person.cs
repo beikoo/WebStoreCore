@@ -6,8 +6,7 @@ using System.Text;
 
 namespace Models
 {
-    [Table("Users")]
-    public class Person:BaseModel
+   public class Person:BaseModel
     {
         public Person()
         {

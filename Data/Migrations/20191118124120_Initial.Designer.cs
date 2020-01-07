@@ -4,14 +4,16 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(WebStoreDbContext))]
-    partial class WebStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191118124120_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -261,17 +263,6 @@ namespace Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2020, 1, 6, 22, 37, 27, 255, DateTimeKind.Local).AddTicks(1672),
-                            Description = "Iphone 7 128GB",
-                            IsDeleted = false,
-                            Name = "Iphone",
-                            Quantity = 300
-                        });
                 });
 
             modelBuilder.Entity("Models.SalesOrder", b =>
@@ -315,41 +306,6 @@ namespace Data.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("Sales");
-                });
-
-            modelBuilder.Entity("Models.UserToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Token")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserTokens");
                 });
 
             modelBuilder.Entity("Models.Customer", b =>
@@ -411,15 +367,6 @@ namespace Data.Migrations
                     b.HasOne("Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Models.UserToken", b =>
-                {
-                    b.HasOne("Models.Person", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

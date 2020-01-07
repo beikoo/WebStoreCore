@@ -4,14 +4,16 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(WebStoreDbContext))]
-    partial class WebStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191226152432_UserToken")]
+    partial class UserToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -266,7 +268,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2020, 1, 6, 22, 37, 27, 255, DateTimeKind.Local).AddTicks(1672),
+                            CreatedAt = new DateTime(2019, 12, 26, 17, 24, 31, 711, DateTimeKind.Local).AddTicks(3657),
                             Description = "Iphone 7 128GB",
                             IsDeleted = false,
                             Name = "Iphone",

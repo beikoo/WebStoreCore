@@ -1,6 +1,6 @@
 ﻿namespace Models
 {
-    public class UserRoles:BaseModel
+    public class UserRoles
     {
         public int UserId { get; set; }
         public Person User { get; set; }

@@ -2,16 +2,17 @@
 {
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Models;
+    using Newtonsoft.Json;
     using Services.CustomModels;
     using Services.Implementations;
 
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class ProductController : ControllerBase
+    public class ProductsController : ControllerBase
     {
         private ProductManager manager;
-        public ProductController(ProductManager productManager)
+        public ProductsController(ProductManager productManager)
         {
             this.manager = productManager;
         }
@@ -20,9 +21,26 @@
         public IActionResult AllProducts()
         {
             var all = manager.AllProducts;
-
-            return Ok(all);
+            var res = JsonConvert.SerializeObject(all);
+            return Ok(res);
         }
+        [HttpGet]
+        [Route("{id:int}")]
+        public IActionResult GetProduct(int id)
+        {
+            if (id != 0)
+            {
+                var product = manager.Get(id);
+                if (product != null)
+                {
+                    var res = JsonConvert.SerializeObject(product);
+                    return Ok(res);
+                }
+
+            }
+            return NotFound();
+        }
+
 
         [HttpPost]
         [Route("add")]
@@ -32,9 +50,23 @@
             var res = manager.Add(model);
             if (res.Length == 0)
             {
-                return Created("api/product", model);
+                return Created("api/products", model);
             }
             return BadRequest();
+        }
+        [HttpDelete]
+        [Route("delete")]
+        public IActionResult Delete(int id)
+        {
+            if (id != 0)
+            {
+                var res = manager.Delete(id);
+                if (res.Length != 0)
+                {
+                    return BadRequest();
+                }
+            }
+            return NoContent();
         }
     }
 }

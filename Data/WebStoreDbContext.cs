@@ -26,12 +26,16 @@ namespace Data
         {
             //localhost\SQLEXPRESS01
            // "server=localhost\SQLEXPRESS01;database=WebStoreCore;trusted_connection=true;"
+
             optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS01;Database=WebStoreCore;Trusted_Connection=True;");
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Product>().HasData(new Product() { Id = 1, Name="Iphone",Quantity=300,CreatedAt = DateTime.Now,Description ="Iphone 7 128GB" });
+
+            
         }
         public override int SaveChanges()
         {

@@ -14,5 +14,6 @@ namespace Services.Interfaces
         public abstract string Add(T model);
         public abstract string Update(T model);
         public abstract string Delete(T model);
+        public abstract T Get(int id);
     }
 }

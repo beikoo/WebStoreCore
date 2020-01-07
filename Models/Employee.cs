@@ -10,7 +10,7 @@ namespace Models
         public string EmployeeNumber { get; set; }
         public string PhoneNumber { get; set; }
         public int? PersonId { get; set; }
-        //[Required]
+        
         public virtual Person Person { get; set; }
         public int DepartmentId { get; set; }
         public virtual Department Department { get; set; }

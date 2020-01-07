@@ -27,12 +27,11 @@
         {
             CreateMap<ICustomModel, Person>();
             CreateMap<RegisterModel, Person>();
-            //    CreateMap<Role, RoleModel>();
+            CreateMap<Role, RoleModel>();
+            CreateMap<RoleModel, Role>();
             CreateMap<ProductModel, Product>().ForMember(d => d.Name, opt => opt.MapFrom(x => x.Name));
             CreateMap<Product, ProductModel>().ForMember(d => d.Name, opt => opt.MapFrom(x => x.Name)); ;
-            //CreateMap<ICustomModel, RoleModel>();
-            //     CreateMap<UserRoles, UserRolesModel>();
-            //     CreateMap<Employee, EmployeeModel>();
+            
         }
     }
 }

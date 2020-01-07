@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Services.Implementation
@@ -72,6 +73,15 @@ namespace Services.Implementation
 
             return false;
         }
+        private bool isRegistered(string email)
+        {
+            var check = this.dbContext.People.SingleOrDefault(x => x.Email == email);
+            if (check != null)
+            {
+                return true;
+            }
+            return false;
+        }
 
         private bool VerifyHashedPassword(string hashedPassword, string password)
         {
@@ -92,36 +102,42 @@ namespace Services.Implementation
             return false;
         }
 
-        public string Register(RegisterModel registerModel)
+        public string Register(RegisterModel model)
         {
-            using (WebStoreDbContext context = new WebStoreDbContext())
+            if (this.isRegistered(model.Email) == false)
             {
-                try
-                {
-                    Person user = context.People.Where(x => x.Email == registerModel.Email).SingleOrDefault();
-                    if (user == null)
-                    {
-                        Person person = new Person()
-                        {
-                            Email = registerModel.Email,
-                            Password = PasswordHash.GenerateHash(registerModel.Password), // PasswordHash
-                            FirstName = registerModel.FirstName,
-                            LastName = registerModel.LastName,
-                          
-                        };
-                        context.People.Add(person);
-                        context.SaveChanges();
+                User = new Person();
 
-                        string token = GenerateUserToken(new RequestTokenModel() { Email = registerModel.Email });
-                        return token;
-                    }
-                    return "Not Registered";
-                }
-                catch (Exception e)
+                var token = GenerateUserToken(new RequestTokenModel() { Email = model.Email, Roles = MapperConfigurator.Mapper.Map<List<RoleModel>>(model.Roles) });
+
+                User = MapperConfigurator.Mapper.Map<Person>(model);
+
+                User.Password = HashPassword(model.Password);
+
+                var userToken = new UserToken() { Token = token, User = User };
+                if (model.Roles != null)
                 {
-                    throw new Exception(e.Message);
+
+                    var getRolesFromDb =
+                    this.dbContext
+                    .Roles
+                    .Where(x => model.Roles.Select(z => z.RoleName).Contains(x.RoleName)).ToList();
+
+                    foreach (var role in getRolesFromDb)
+                    {
+                        User.UserRoles.Add(new UserRoles() { Role = role });
+
+                    }
                 }
+
+                this.dbContext.People.Add(User);
+                this.dbContext.UserTokens.Add(userToken);
+                this.dbContext.SaveChanges();
+
+                return token;
+
             }
+            return "";
         }
 
         public string UpdateUser(UpdateModel updateModel)
@@ -162,5 +178,24 @@ namespace Services.Implementation
             token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
             return token;
         }
+        private string HashPassword(string password)
+        {
+            byte[] salt;
+            byte[] buffer2;
+            if (password == null)
+            {
+                throw new ArgumentNullException("Password is empty");
+            }
+            using (Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, 0x10, 0x3e8))
+            {
+                salt = bytes.Salt;
+                buffer2 = bytes.GetBytes(0x20);
+            }
+            byte[] dst = new byte[0x31];
+            Buffer.BlockCopy(salt, 0, dst, 1, 0x10);
+            Buffer.BlockCopy(buffer2, 0, dst, 0x11, 0x20);
+            return Convert.ToBase64String(dst);
+        }
+
     }
 }

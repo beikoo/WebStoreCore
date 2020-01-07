@@ -1,4 +1,5 @@
-﻿using Services.Common;
+﻿using Models;
+using Services.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -22,5 +23,6 @@ namespace Services.CustomModels
         [MaxLength(50)]
         [MinLength(3)]
         public string LastName { get; set; }
+        public ICollection<Role> Roles { get; set; }
     }
 }

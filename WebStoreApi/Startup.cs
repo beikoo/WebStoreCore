@@ -13,13 +13,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Services.Implementation;
 using Services.Interface;
-using Microsoft.OpenApi.Models;
 using Repositories.Interfaces;
 using Repositories;
 using Services.CustomModels;
 using System.Configuration;
 using Microsoft.Extensions.Configuration;
 using Services.Implementations;
+using Microsoft.OpenApi.Models;
 
 namespace WebStoreApi
 {
@@ -35,8 +35,9 @@ namespace WebStoreApi
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-           
+
             services.AddControllers();
+            services.AddAuthorization();
 
             services.Configure<TokenModel>(Configuration.GetSection("tokenManagement"));
             var token = Configuration.GetSection("tokenManagement").Get<TokenModel>();
@@ -47,10 +48,12 @@ namespace WebStoreApi
                 {
                     x.RequireHttpsMetadata = false;
                     x.SaveToken = true;
+
                     x.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
                         ValidateAudience = false,
+
                         //ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(token.Secret)),
@@ -59,10 +62,13 @@ namespace WebStoreApi
                         ClockSkew = TimeSpan.Zero
                     };
                 });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             });
+
+           
 
             services.AddScoped<WebStoreDbContext>();
             services.AddScoped<IUserManager,UserManager>();
@@ -80,27 +86,25 @@ namespace WebStoreApi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSwagger();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+
+            app.UseHttpsRedirection();
+            app.UseSwagger();
+
 
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
-            //app.UseHttpsRedirection();
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapGet("/helloworld", async context =>
-            //    {
-            //        await context.Response.WriteAsync("Hello World!");
-            //    });
-            //});
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+
         }
     }
 }

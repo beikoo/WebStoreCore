@@ -26,7 +26,7 @@ namespace Data
         {
             //localhost\SQLEXPRESS01
            // "server=localhost\SQLEXPRESS01;database=WebStoreCore;trusted_connection=true;"
-            optionsBuilder.UseSqlServer(@"Server=airfan\SQLEXPRESS;Database=WebApiCore;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS01;Database=WebStoreCore;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

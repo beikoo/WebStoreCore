@@ -25,8 +25,8 @@
     {
         public MappingProfile()
         {
-            CreateMap<ICustomModel, User>();
-            CreateMap<RegisterModel, User>();
+            CreateMap<ICustomModel, Person>();
+            CreateMap<RegisterModel, Person>();
             //    CreateMap<Role, RoleModel>();
             CreateMap<ProductModel, Product>().ForMember(d => d.Name, opt => opt.MapFrom(x => x.Name));
             CreateMap<Product, ProductModel>().ForMember(d => d.Name, opt => opt.MapFrom(x => x.Name)); ;

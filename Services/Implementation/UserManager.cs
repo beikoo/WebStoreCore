@@ -1,10 +1,12 @@
 ﻿using Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Models;
 using Repositories.Interfaces;
 using Services.Common;
 using Services.CustomModels;
+using Services.CustomModels.MapperSettings;
 using Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -17,14 +19,13 @@ namespace Services.Implementation
 {
     public class UserManager : IUserManager
     {
-        private readonly IUserTokensRepository tokenRepository;
-        private readonly IUsersRepository repository;
         private readonly TokenModel _tokenManagement;
+        private WebStoreDbContext dbContext;
         private Person User;
-        public UserManager(IUserTokensRepository tokenRepository, IUsersRepository data, IOptions<TokenModel> tokenManagement)
+
+        public UserManager(WebStoreDbContext data, IOptions<TokenModel> tokenManagement)
         {
-            this.tokenRepository = tokenRepository;
-            this.repository = data;
+            this.dbContext = data;
             this._tokenManagement = tokenManagement.Value;
         }
 
@@ -42,21 +43,26 @@ namespace Services.Implementation
         {
             if (this.IsValidUser(loginModel))
             {
-                var token = GenerateUserToken(new RequestTokenModel() { Email = loginModel.Email });
+                var token = this.GenerateUserToken(new RequestTokenModel() { Email = loginModel.Email, Roles = MapperConfigurator.Mapper.Map<List<RoleModel>>(User.UserRoles.Select(x => x.Role).ToList()) });
                 if (token.Length > 0)
                 {
-                    var usertoken = new UserToken() { Token = token, User = User };
-                    tokenRepository.Add(usertoken);
-                    tokenRepository.SaveChanges();
+                    dbContext.UserTokens.Add(new UserToken() { Token = token, User = User });
+                    dbContext.SaveChanges();
+
                     return token;
                 }
             }
-            return string.Empty;
+
+            return "";
         }
 
         private bool IsValidUser(LoginModel loginModel)
         {
-            var currentUser = this.repository.GetByEmail(loginModel.Email);
+            var currentUser = this.dbContext.People
+               .Include(x => x.UserRoles)
+               .ThenInclude(x => x.Role)
+               .SingleOrDefault(x => x.Email == loginModel.Email);
+
             if (currentUser != null)
             {
                 var res = this.VerifyHashedPassword(currentUser.Password, loginModel.Password);
@@ -101,9 +107,7 @@ namespace Services.Implementation
                             Password = PasswordHash.GenerateHash(registerModel.Password), // PasswordHash
                             FirstName = registerModel.FirstName,
                             LastName = registerModel.LastName,
-                            CreatedAt = DateTime.Now,
-                            IsDeleted = false
-
+                          
                         };
                         context.People.Add(person);
                         context.SaveChanges();
@@ -131,18 +135,23 @@ namespace Services.Implementation
 
             var claim = new List<Claim>()
             {
-              new Claim(ClaimTypes.Email, request.Email)
+              new Claim(ClaimTypes.Email, request.Email),
+
             };
 
-            //for (int i = 0; i < User.UserRoles.Count; i++)
-            //{
-            //    claim.Add(new Claim(ClaimTypes.Role, User.UserRoles.ToList()[i].Role.RoleName));
-            //}
-                
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(MessageAndVariables.salt));
+            if (request.Roles != null)
+            {
+                for (int i = 0; i < request.Roles.Count; i++)
+                {
+                    claim.Add(new Claim(ClaimTypes.Role, request.Roles.ToList()[i].RoleName));
+                }
+            }
+
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenManagement.Secret));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var jwttoken = new JwtSecurityToken(
+            var jwtToken = new JwtSecurityToken(
                 _tokenManagement.Issuer,
                 _tokenManagement.Audience,
                 claim,
@@ -150,7 +159,7 @@ namespace Services.Implementation
                 signingCredentials: credentials
             );
 
-            token = new JwtSecurityTokenHandler().WriteToken(jwttoken);
+            token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
             return token;
         }
     }

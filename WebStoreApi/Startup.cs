@@ -35,10 +35,7 @@ namespace WebStoreApi
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddHttpsRedirection(x=>
-            //{
-            //    x.HttpsPort=
-            //});
+           
             services.AddControllers();
 
             services.Configure<TokenModel>(Configuration.GetSection("tokenManagement"));
@@ -67,7 +64,7 @@ namespace WebStoreApi
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             });
 
-            services.AddScoped<WebStoreDbContext, WebStoreDbContext>();
+            services.AddScoped<WebStoreDbContext>();
             services.AddScoped<IUserManager,UserManager>();
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<IUserTokensRepository, UserTokenRepository>();

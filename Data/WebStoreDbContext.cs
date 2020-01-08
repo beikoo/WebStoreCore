@@ -28,8 +28,8 @@ namespace Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //localhost\SQLEXPRESS01
-           // "server=localhost\SQLEXPRESS01;database=WebStoreCore;trusted_connection=true;"
-            optionsBuilder.UseSqlServer(@"server=localhost\SQLEXPRESS01;database=WebStoreCore;trusted_connection=true;");
+            // "server=localhost\SQLEXPRESS01;database=WebStoreCoreApi;trusted_connection=true;"
+            optionsBuilder.UseSqlServer(@"server=localhost\SQLEXPRESS01;database=WebStoreCoreApi;trusted_connection=true;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

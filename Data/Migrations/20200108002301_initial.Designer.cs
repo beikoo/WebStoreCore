@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(WebStoreDbContext))]
-    [Migration("20200107213101_initial-dd")]
-    partial class initialdd
+    [Migration("20200108002301_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -183,7 +183,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("People");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Models.Photo", b =>
@@ -257,7 +257,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2020, 1, 7, 23, 31, 1, 62, DateTimeKind.Local).AddTicks(6967),
+                            CreatedAt = new DateTime(2020, 1, 8, 2, 23, 0, 651, DateTimeKind.Local).AddTicks(3578),
                             Description = "Iphone 7 128GB",
                             Name = "Iphone",
                             Quantity = 300

@@ -16,7 +16,7 @@ namespace Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
-        public DbSet<Person> People { get; set; }
+        public DbSet<Person> Users { get; set; }
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<SalesOrder> Sales { get; set; }
@@ -30,7 +30,7 @@ namespace Data
             //localhost\SQLEXPRESS01
            // "server=localhost\SQLEXPRESS01;database=WebStoreCore;trusted_connection=true;"
 
-            optionsBuilder.UseSqlServer(@"Server=airfan\SQLEXPRESS;Database=WebApiCore1;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS01;Database=WebStoreCoreApi;Trusted_Connection=True;");
 
         }
 

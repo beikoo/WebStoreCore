@@ -255,7 +255,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2020, 1, 8, 2, 23, 0, 651, DateTimeKind.Local).AddTicks(3578),
+                            CreatedAt = new DateTime(2020, 1, 8, 8, 34, 13, 452, DateTimeKind.Local).AddTicks(8096),
                             Description = "Iphone 7 128GB",
                             Name = "Iphone",
                             Quantity = 300

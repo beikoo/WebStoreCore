@@ -61,7 +61,7 @@ namespace Services.Implementation
         private bool IsValidUser(LoginModel loginModel)
         {
             
-            var currentUser = this.dbContext.People
+            var currentUser = this.dbContext.Users
                .Include(x => x.UserRoles)
                .ThenInclude(x => x.Role)
                .SingleOrDefault(x => x.Email == loginModel.Email);
@@ -77,7 +77,7 @@ namespace Services.Implementation
         }
         private bool isRegistered(string email)
         {
-            var check = this.dbContext.People.SingleOrDefault(x => x.Email == email);
+            var check = this.dbContext.Users.SingleOrDefault(x => x.Email == email);
             if (check != null)
             {
                 return true;
@@ -114,7 +114,7 @@ namespace Services.Implementation
                     }
                 }
 
-                this.dbContext.People.Add(User);
+                this.dbContext.Users.Add(User);
                 this.dbContext.UserTokens.Add(userToken);
                 this.dbContext.SaveChanges();
 

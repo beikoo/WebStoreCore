@@ -59,12 +59,12 @@
         [Route("delete")]
         public IActionResult Delete(int id)
         {
-            if (id != 0)
+            if (id >= 0)
             {
                 var res = manager.Delete(id);
                 if (res.Length != 0)
                 {
-                    return BadRequest();
+                    return Delete(id);
                 }
             }
             return NoContent();

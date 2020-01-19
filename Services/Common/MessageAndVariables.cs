@@ -10,5 +10,6 @@ namespace Services.Common
         public const string passError = "Password error";
         public const string passRequired = "Password required";
         public const string UpdateFail = "Fail";
+        public const string DeleteFail = "DeleteFail";
     }
 }

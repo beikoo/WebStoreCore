@@ -37,7 +37,7 @@
                     Product product = MapperConfigurator.Mapper.Map<Product>(model);
                     this.context.Products.Add(product);
                     this.context.SaveChanges();
-                    return "";
+                    return string.Empty;
                 }
 
             }
@@ -86,9 +86,9 @@
                     int res = this.context.SaveChanges();
                     if (res == 1)
                     {
-                        return "";
+                        return string.Empty;
                     }
-                    return string.Format($"{MessageAndVariables.UpdateFail} {model.Name}.");
+                    return string.Format($"{MessageAndVariables.DeleteFail} {model.Name}.");
                 }
 
             }
@@ -117,7 +117,7 @@
                     int res = this.context.SaveChanges();
                     if (res == 1)
                     {
-                        return "";
+                        return string.Empty;
                     }
                     return string.Format($"{MessageAndVariables.UpdateFail} {model.Name}.");
                 }
